@@ -1,11 +1,13 @@
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import ContactSection from "@/components/sections/ContactSection";
-import ExperienceSection from "@/components/sections/ExperienceSection";
+import dynamic from "next/dynamic";
 import HeroSection from "@/components/sections/HeroSection";
 import IntroModelSection from "@/components/sections/IntroModelSection";
-import ProjectsSection from "@/components/sections/ProjectsSection";
-import SkillsSection from "@/components/sections/SkillsSection";
+
+const SkillsSection = dynamic(() => import("@/components/sections/SkillsSection"));
+const ExperienceSection = dynamic(() => import("@/components/sections/ExperienceSection"));
+const ProjectsSection = dynamic(() => import("@/components/sections/ProjectsSection"));
+const ContactSection = dynamic(() => import("@/components/sections/ContactSection"));
 
 export default function Home() {
   return (

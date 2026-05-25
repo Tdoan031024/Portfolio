@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
+import GuideCallout from "@/components/GuideCallout";
 import { type ReactNode, useEffect, useState } from "react";
 
 type TechNode = {
@@ -106,6 +107,10 @@ const TECH_NODES: TechNode[] = [
   },
 ];
 
+const guideVersion = "portfolio-guides-2026-05-22-6";
+const guideAnimationDuration = 6800;
+const guideFadeDuration = 700;
+
 function clampTilt(value: number, max = 7) {
   return Math.max(-max, Math.min(max, value));
 }
@@ -113,6 +118,8 @@ function clampTilt(value: number, max = 7) {
 export default function HeroSection() {
   const { t } = useLanguage();
   const [text, setText] = useState("");
+  const [modelGuideMounted, setModelGuideMounted] = useState(false);
+  const [modelGuideVisible, setModelGuideVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(100);
@@ -121,6 +128,38 @@ export default function HeroSection() {
   );
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+
+    let hasShown = false;
+    const timers: number[] = [];
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || hasShown) return;
+        hasShown = true;
+        setModelGuideMounted(true);
+        window.requestAnimationFrame(() => setModelGuideVisible(true));
+        timers.push(
+          window.setTimeout(() => {
+            setModelGuideVisible(false);
+          }, guideAnimationDuration),
+          window.setTimeout(() => {
+            setModelGuideMounted(false);
+          }, guideAnimationDuration + guideFadeDuration),
+        );
+        observer.disconnect();
+      },
+      { threshold: 0.22 },
+    );
+
+    observer.observe(hero);
+    return () => {
+      observer.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!canTilt) return;
@@ -170,8 +209,23 @@ export default function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative z-10 -mt-24 overflow-visible bg-transparent px-6 pb-28 pt-0 md:-mt-32 md:px-16"
+      className="relative z-[260] -mt-24 overflow-visible bg-transparent px-6 pb-28 pt-0 md:-mt-32 md:px-16"
     >
+      {modelGuideMounted && (
+        <GuideCallout
+          label="Use these panels to navigate"
+          className={`absolute inset-0 z-[620] hidden h-full w-full transition-opacity duration-700 lg:block ${
+            modelGuideVisible ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+          viewBox="0 0 1920 720"
+          initialOffset={{ x: 3, y: 47 }}
+          start={{ x: 1100, y: 14 }}
+          end={{ x: 1276, y: 171 }}
+          labelBox={{ x: 993, y: -38, width: 310, height: 56 }}
+          storageKey="guide-model-about"
+          storageVersion={guideVersion}
+        />
+      )}
       <div className="relative z-0 mx-auto flex max-w-7xl flex-col gap-12 lg:flex-row lg:items-center">
         <div className="min-w-0 flex-1 lg:flex-[1.18]">
           <motion.div
@@ -243,38 +297,35 @@ export default function HeroSection() {
             <motion.div
               animate={{ rotateX: canTilt ? tilt.x * 0.25 : 0, rotateY: canTilt ? tilt.y * 0.25 : 0 }}
               transition={{ type: "spring", stiffness: 70, damping: 24, mass: 1.2 }}
-              className="group relative h-full w-full flex items-center justify-center"
+              className="group relative flex h-full w-full translate-y-5 items-center justify-center md:translate-y-6"
               style={{ transformStyle: "preserve-3d" }}
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 16, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
-                className="absolute inset-[34px] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,#22d3ee_58deg,#3b82f6_138deg,#8b5cf6_220deg,transparent_300deg)] blur-[1px]"
-                style={{ opacity: isHoveringAvatar ? 0.95 : 0.72 }}
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 22, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
-                className="absolute inset-[6px] rounded-full bg-[conic-gradient(from_180deg,transparent,rgba(34,211,238,0.22),transparent,rgba(139,92,246,0.18),transparent)] blur-2xl"
-                style={{ opacity: isHoveringAvatar ? 0.75 : 0.42 }}
-              />
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 34, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
                 className="absolute inset-[18px] rounded-full border border-dashed border-cyan-300/14"
               />
-              <motion.div
-                className="pointer-events-none absolute inset-12 rounded-full bg-cyan-300/16 blur-3xl"
-                animate={{
-                  x: canTilt ? tilt.y * 2.4 : 0,
-                  y: canTilt ? tilt.x * 2.4 : 0,
-                  opacity: isHoveringAvatar ? 0.5 : 0.22,
-                }}
-                transition={{ duration: 0.28 }}
-              />
               <div className="absolute inset-[2px] rounded-full border border-cyan-300/10" />
               <div className="absolute inset-[48px] rounded-full border border-white/10" />
               <div className="absolute inset-[-18px] rounded-full border border-cyan-300/12 animate-soft-pulse transition-all duration-500 group-hover:border-cyan-200/32 group-hover:shadow-[0_0_110px_rgba(34,211,238,.18)]" />
+              <motion.div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-[292px] w-[292px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-200/18 shadow-[0_0_42px_rgba(34,211,238,0.14)] md:h-[354px] md:w-[354px]"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 18, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
+              >
+                <span className="absolute left-1/2 top-[-4px] h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-200 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
+                <span className="absolute bottom-[15%] right-[8%] h-1.5 w-1.5 rounded-full bg-blue-300 shadow-[0_0_16px_rgba(147,197,253,0.85)]" />
+              </motion.div>
+              <motion.div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-[326px] w-[326px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-cyan-100/12 md:h-[392px] md:w-[392px]"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 30, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
+              >
+                <span className="absolute left-[13%] top-[20%] h-1.5 w-1.5 rounded-full bg-violet-200 shadow-[0_0_14px_rgba(196,181,253,0.8)]" />
+                <span className="absolute bottom-[7%] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-emerald-200 shadow-[0_0_16px_rgba(110,231,183,0.75)]" />
+              </motion.div>
 
               <motion.div
                 animate={{ rotate: 360 }}
@@ -322,7 +373,6 @@ export default function HeroSection() {
                 <div className="absolute inset-0 z-30 rounded-full ring-1 ring-inset ring-white/25" />
                 <div className="absolute inset-[8px] z-30 rounded-full ring-1 ring-inset ring-cyan-200/16" />
                 <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_45%_18%,rgba(255,255,255,0.2),transparent_42%)]" />
-                <div className="avatar-scan absolute inset-0 z-20" />
                 <motion.div
                   className="absolute inset-0 z-10"
                   animate={{ x: canTilt ? tilt.y * -1.3 : 0, y: canTilt ? tilt.x * -1.3 : 0 }}
@@ -343,7 +393,7 @@ export default function HeroSection() {
                   style={{ background: "radial-gradient(circle at 50% 35%,rgba(255,255,255,.20),transparent 58%)" }}
                 />
               </motion.div>
-c            </motion.div>
+            </motion.div>
           </div>
         </motion.div>
       </div>

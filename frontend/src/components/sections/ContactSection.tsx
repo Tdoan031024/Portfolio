@@ -60,7 +60,7 @@ export default function ContactSection() {
         <div className="relative min-h-[520px]">
           <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.02fr]">
             <motion.div
-              initial={isMobile ? { opacity: 0, y: 24 } : { opacity: 0, x: 360, y: 10 }}
+              initial={false}
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ duration: 0.85, ease: "easeOut" }}
@@ -81,7 +81,7 @@ export default function ContactSection() {
 
             <motion.form
               onSubmit={handleSubmit}
-              initial={isMobile ? { opacity: 0, y: 22 } : { opacity: 0, x: 70 }}
+              initial={false}
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8, delay: isMobile ? 0.1 : 0.25, ease: "easeOut" }}

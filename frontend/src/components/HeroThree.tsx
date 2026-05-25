@@ -13,6 +13,7 @@ type HeroThreeProps = {
   introZoom?: boolean;
   enableControls?: boolean;
   enableInteraction?: boolean;
+  enableHover?: boolean;
   enableFloat?: boolean;
   initialCameraPosition?: { x: number; y: number; z: number };
   initialTarget?: { x: number; y: number; z: number };
@@ -25,7 +26,7 @@ type NavTarget = "about" | "skills" | "works" | "contact";
 type ExternalTarget = "mail" | "facebook" | "github" | "linkedin";
 
 const NAV_SECTION_IDS: Record<NavTarget, string[]> = {
-  about: ["about"],
+  about: ["hero", "about"],
   skills: ["skills"],
   works: ["projects", "works"],
   contact: ["contact"],
@@ -164,6 +165,7 @@ export default function HeroThree({
   introZoom = false,
   enableControls = true,
   enableInteraction = true,
+  enableHover = true,
   enableFloat = true,
   initialCameraPosition,
   initialTarget,
@@ -177,15 +179,19 @@ export default function HeroThree({
 
     const container = containerRef.current;
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowPowerDevice =
+      ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4 ||
+      (navigator.hardwareConcurrency ?? 8) <= 4;
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !lowPowerDevice,
       alpha: true,
       powerPreference: "high-performance",
     });
 
     renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, isCoarsePointer ? 1 : 1.2),
+      Math.min(window.devicePixelRatio, isCoarsePointer ? 0.9 : lowPowerDevice ? 0.95 : 1),
     );
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -200,7 +206,7 @@ export default function HeroThree({
     );
     const baseCameraPosition = initialCameraPosition ?? { x: 0, y: 1.1, z: 3.2 };
     let dynamicBaseZ = baseCameraPosition.z;
-    let introStartZ = introZoom ? dynamicBaseZ + 1.2 : dynamicBaseZ;
+    const introStartZ = introZoom ? dynamicBaseZ + 1.2 : dynamicBaseZ;
     camera.position.set(
       baseCameraPosition.x,
       baseCameraPosition.y,
@@ -217,6 +223,11 @@ export default function HeroThree({
     if (initialTarget) {
       controls.target.set(initialTarget.x, initialTarget.y, initialTarget.z);
     }
+    const syncCameraTarget = () => {
+      if (!initialTarget || controls.enabled) return;
+      camera.lookAt(initialTarget.x, initialTarget.y, initialTarget.z);
+    };
+    syncCameraTarget();
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.05);
@@ -231,6 +242,8 @@ export default function HeroThree({
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    let pointerDirty = false;
+    let lastRaycastAt = 0;
     let hovered = false;
     let isPointerDownOnModel = false;
     let mixer: THREE.AnimationMixer | null = null;
@@ -408,27 +421,16 @@ export default function HeroThree({
     );
 
     const handlePointerMove = (event: PointerEvent) => {
+      if (!enableHover) return;
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       lookTarget.set(pointer.x, pointer.y);
-      if (!modelRoot) return;
-
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObject(modelRoot, true);
-      const isHover = hits.length > 0;
-      const hitTarget = hits.length ? resolveTargetByName(hits[0].object) : {};
-      renderer.domElement.style.cursor = hitTarget.nav || hitTarget.external || hitTarget.ball
-        ? "pointer"
-        : isHover
-          ? isPointerDownOnModel
-            ? "grabbing"
-            : "grab"
-          : "default";
-      hovered = isHover;
+      pointerDirty = true;
     };
 
     const handlePointerLeave = () => {
+      if (!enableHover) return;
       hovered = false;
       lookTarget.set(0, 0);
       isPointerDownOnModel = false;
@@ -476,8 +478,10 @@ export default function HeroThree({
     };
 
     if (enableInteraction) {
-      renderer.domElement.addEventListener("pointermove", handlePointerMove);
-      renderer.domElement.addEventListener("pointerleave", handlePointerLeave);
+      if (enableHover) {
+        renderer.domElement.addEventListener("pointermove", handlePointerMove);
+        renderer.domElement.addEventListener("pointerleave", handlePointerLeave);
+      }
       renderer.domElement.addEventListener("pointerdown", handleClick);
       window.addEventListener("pointerup", handlePointerUp);
     }
@@ -488,16 +492,43 @@ export default function HeroThree({
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
+        if (isVisible && !rafId) {
+          clock.getDelta();
+          rafId = window.requestAnimationFrame(animate);
+        }
       },
       { threshold: 0.05 },
     );
     observer.observe(container);
 
     const animate = () => {
-      rafId = window.requestAnimationFrame(animate);
-      if (!isVisible) return;
+      if (!isVisible) {
+        rafId = 0;
+        return;
+      }
       const delta = clock.getDelta();
       if (mixer) mixer.update(delta);
+
+      if (enableHover && pointerDirty && modelRoot) {
+        const nowMs = performance.now();
+        const minRaycastGap = lowPowerDevice ? 66 : 33;
+        if (nowMs - lastRaycastAt >= minRaycastGap) {
+          lastRaycastAt = nowMs;
+          pointerDirty = false;
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObject(modelRoot, true);
+          const isHover = hits.length > 0;
+          const hitTarget = hits.length ? resolveTargetByName(hits[0].object) : {};
+          renderer.domElement.style.cursor = hitTarget.nav || hitTarget.external || hitTarget.ball
+            ? "pointer"
+            : isHover
+              ? isPointerDownOnModel
+                ? "grabbing"
+                : "grab"
+              : "default";
+          hovered = isHover;
+        }
+      }
 
       lookCurrent.x += (lookTarget.x - lookCurrent.x) * 0.08;
       lookCurrent.y += (lookTarget.y - lookCurrent.y) * 0.08;
@@ -524,6 +555,7 @@ export default function HeroThree({
             const t = ease((phase - 0.52) / 0.48);
             camera.position.z = lerp(1.9, dynamicBaseZ, t);
           }
+          syncCameraTarget();
         }
       }
 
@@ -559,15 +591,16 @@ export default function HeroThree({
         }
       }
 
-      if (enableFloat) {
+      if (enableFloat && !prefersReducedMotion && !lowPowerDevice) {
         group.rotation.y = Math.sin(performance.now() * 0.0004) * 0.08;
         group.rotation.x = Math.sin(performance.now() * 0.0003) * 0.04;
       }
-      controls.update();
+      if (controls.enabled) controls.update();
       renderer.render(scene, camera);
+      rafId = window.requestAnimationFrame(animate);
     };
 
-    animate();
+    rafId = window.requestAnimationFrame(animate);
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -590,6 +623,7 @@ export default function HeroThree({
         const now = performance.now();
         if (!introZoom || !modelReady || (now - introStartAt) / 1000 > 4.8) {
           camera.position.z = dynamicBaseZ;
+          syncCameraTarget();
         }
 
         camera.aspect = width / height;
@@ -603,8 +637,10 @@ export default function HeroThree({
       resizeObserver.disconnect();
       observer.disconnect();
       if (enableInteraction) {
-        renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-        renderer.domElement.removeEventListener("pointerleave", handlePointerLeave);
+        if (enableHover) {
+          renderer.domElement.removeEventListener("pointermove", handlePointerMove);
+          renderer.domElement.removeEventListener("pointerleave", handlePointerLeave);
+        }
         renderer.domElement.removeEventListener("pointerdown", handleClick);
         window.removeEventListener("pointerup", handlePointerUp);
       }
@@ -625,7 +661,7 @@ export default function HeroThree({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [modelUrl]);
+  }, [enableHover, enableInteraction, modelUrl]);
 
   return <div ref={containerRef} className={className ?? "h-full w-full"} />;
 }

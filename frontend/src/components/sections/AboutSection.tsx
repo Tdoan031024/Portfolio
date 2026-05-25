@@ -38,7 +38,7 @@ export default function AboutSection() {
         <p className="section-title">{t("aboutKicker")}</p>
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6 }}
@@ -103,7 +103,7 @@ export default function AboutSection() {
             {timeline.map((item, index) => (
               <motion.div
                 key={item.year}
-                initial={{ opacity: 0, x: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}

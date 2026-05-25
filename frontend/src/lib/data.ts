@@ -1,4 +1,4 @@
-export const projects = [
+/*  */export const projects = [
   {
     id: "nebula",
     title: "Nebula Commerce",

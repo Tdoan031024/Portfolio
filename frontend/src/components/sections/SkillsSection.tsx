@@ -85,13 +85,13 @@ const GROUPS: GroupConfig[] = [
     label: "FRONTEND",
     color: "#35eaff",
     color2: "#9b4dff",
-    labelPos: { x: 49.9, y: 3.5 },
+    labelPos: { x: 49.3, y: 5.2 },
     connectorEnd: { x: 49, y: 16 },
     nodes: [
-      { name: "React", icon: "react", x: 35.4, y: 14.6, size: 72, orbit: "orbit1" },
-      { name: "Next.js", icon: "next", x: 44.1, y: 12.7, size: 72, orbit: "orbit1" },
+      { name: "React", icon: "react", x: 36.0, y: 13.7, size: 72, orbit: "orbit1" },
+      { name: "Next.js", icon: "next", x: 45.4, y: 12.7, size: 72, orbit: "orbit1" },
       { name: "Tailwind CSS", icon: "tailwind", x: 53.7, y: 12.2, size: 72, orbit: "orbit1" },
-      { name: "React Native", icon: "react", x: 62.3, y: 13.5, size: 72, orbit: "orbit1" },
+      { name: "React Native", icon: "react", x: 61.2, y: 13.3, size: 72, orbit: "orbit1" },
     ],
   },
   {
@@ -100,7 +100,7 @@ const GROUPS: GroupConfig[] = [
     label: "BACKEND",
     color: "#ff4ecd",
     color2: "#ff3d86",
-    labelPos: { x: 99.2, y: 33.2 },
+    labelPos: { x: 92.7, y: 23.1 },
     connectorEnd: { x: 82, y: 38 },
     nodes: [
       { name: "Node.js", icon: "node", x: 74.4, y: 22.8, size: 72, orbit: "orbit2" },
@@ -108,7 +108,7 @@ const GROUPS: GroupConfig[] = [
       { name: "NestJS", icon: "nestjs", x: 87.6, y: 33.1, size: 72, orbit: "orbit2" },
       { name: "PHP", icon: "php", x: 91.8, y: 42.9, size: 72, orbit: "orbit2" },
       { name: "Laravel", icon: "laravel", x: 92.2, y: 55.0, size: 72, orbit: "orbit2" },
-      { name: "ASP.NET MVC", icon: "dotnet", x: 87.4, y: 67.0, size: 72, orbit: "orbit2" },
+      { name: "ASP.NET MVC", icon: "dotnet", x: 88.7, y: 65.7, size: 72, orbit: "orbit2" },
     ],
   },
   {
@@ -117,7 +117,7 @@ const GROUPS: GroupConfig[] = [
     label: "DATABASE",
     color: "#22ffd1",
     color2: "#65ff8f",
-    labelPos: { x: 71.9, y: 93.1 },
+    labelPos: { x: 78.2, y: 87.5 },
     connectorEnd: { x: 68.5, y: 75.5 },
     nodes: [
       { name: "MySQL", icon: "mysql", x: 75.8, y: 71.7, size: 72, orbit: "orbit3" },
@@ -132,7 +132,7 @@ const GROUPS: GroupConfig[] = [
     label: "DEVOPS / CLOUD",
     color: "#3aa2ff",
     color2: "#35eaff",
-    labelPos: { x: 16.9, y: 88.4 },
+    labelPos: { x: 15.3, y: 85.7 },
     connectorEnd: { x: 29, y: 67 },
     nodes: [
       { name: "Docker", icon: "docker", x: 41.6, y: 73.3, size: 72, orbit: "orbit4" },
@@ -247,19 +247,19 @@ function Icon({ type }: { type: string }): ReactNode {
 }
 
 const galaxyStyles = `
-.tech-galaxy { position: relative; z-index: 20; width: 100%; min-height: 90vh; overflow: hidden; display: grid; place-items: center; background: var(--void); isolation: isolate; }
-.tech-galaxy::before, .tech-galaxy::after { content: ""; position: absolute; inset: -20%; pointer-events: none; z-index: -2; }
-.tech-galaxy::before { background-image: radial-gradient(circle, rgba(255,255,255,.42) 0 1px, transparent 1.2px), radial-gradient(circle, rgba(62,233,255,.28) 0 1px, transparent 1.3px), radial-gradient(circle, rgba(182,88,255,.24) 0 1px, transparent 1.4px); background-size: 110px 110px, 180px 180px, 260px 260px; opacity: .3; animation: starDrift 48s linear infinite; }
-.tech-galaxy::after { content: none; }
+.tech-galaxy { position: relative; z-index: 6; width: 100%; min-height: 90vh; overflow: hidden; display: grid; place-items: center; background: transparent; isolation: auto; }
+.tech-galaxy.is-paused *, .tech-galaxy.is-reduced * { animation-play-state: paused !important; }
+.tech-galaxy.is-reduced .star-layer, .tech-galaxy.is-reduced .connect-layer:not(.hub-connectors) { display: none; }
+.tech-galaxy::before, .tech-galaxy::after { content: none; }
 @keyframes starDrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-110px,80px,0); } }
 @keyframes nebulaPulse { from { opacity: .55; transform: scale(1); } to { opacity: .95; transform: scale(1.03); } }
 .corner-scan { display: none; }
 @keyframes scan { 0% { transform: translateY(-140px); } 100% { transform: translateY(calc(100vh + 140px)); } }
-.galaxy-frame { position: relative; width: min(100vw, 1500px); aspect-ratio: 16 / 9; min-height: 590px; margin-top: 44px; transform-origin: center; user-select: none; }
+.galaxy-frame { position: relative; width: min(100vw, 1500px); aspect-ratio: 16 / 9; min-height: 590px; margin-top: 44px; transform-origin: center; user-select: none; contain: layout paint style; }
 .galaxy-frame::before, .galaxy-frame::after { content: none; }
 .hud-vignette { display: none; }
 .orbit-layer, .connect-layer, .node-layer, .label-layer, .core-layer, .star-layer { position: absolute; inset: 0; }
-.orbit-layer { z-index: 2; filter: drop-shadow(0 0 7px rgba(79,207,255,.4)); }
+.orbit-layer { z-index: 2; filter: drop-shadow(0 0 4px rgba(79,207,255,.28)); }
 .connect-layer { z-index: 4; opacity: .9; }
 .star-layer { z-index: 5; pointer-events: none; }
 .node-layer { z-index: 10; }
@@ -267,7 +267,7 @@ const galaxyStyles = `
 .core-layer { z-index: 12; pointer-events: none; }
 .layer-svg { width: 100%; height: 100%; display: block; }
 .orbit-path { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-dasharray: 7 9; opacity: .75; animation: dashMove 24s linear infinite; }
-.orbit-path.faint { stroke-width: .9; opacity: .32; stroke-dasharray: 2 12; }
+.orbit-path.faint { stroke-width: .9; opacity: .28; stroke-dasharray: 2 12; animation: none; }
 .orbit-path-five { stroke-width: 1.15; opacity: .62; stroke-dasharray: 5 10; }
 @keyframes dashMove { to { stroke-dashoffset: -320; } }
 .connector { fill: none; stroke-width: 1.2; stroke-dasharray: 4 9; opacity: .68; animation: ledFlow 5.5s linear infinite; filter: drop-shadow(0 0 6px currentColor); }
@@ -275,34 +275,40 @@ const galaxyStyles = `
 .led-dot { filter: drop-shadow(0 0 9px currentColor); animation: dotPulse 2.6s ease-in-out infinite alternate; }
 @keyframes dotPulse { from { opacity: .55; } to { opacity: 1; } }
 .hub-connectors { display: none; }
-.star { position: absolute; border-radius: 50%; opacity: .85; box-shadow: 0 0 10px currentColor, 0 0 22px currentColor; animation: twinkle linear infinite; }
+.star { position: absolute; border-radius: 50%; opacity: .78; box-shadow: 0 0 8px currentColor; animation: twinkle linear infinite; }
 @keyframes twinkle { 0%,100% { transform: scale(.8); opacity:.45; } 50% { transform: scale(1.25); opacity:1; } }
-.tech-node { position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); transform: translate(-50%, -50%) scale(.66); opacity: 0; display: grid; place-items: center; cursor: grab; touch-action: none; user-select: none; animation: nodeIntro .75s cubic-bezier(.18,.89,.32,1.28) forwards; animation-delay: var(--delay); transition: transform .28s ease, filter .28s ease; border: none; background: none; padding: 0; }
+.tech-node { position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); transform: translate(-50%, -50%) scale(.66); opacity: 0; display: grid; place-items: center; cursor: grab; touch-action: none; user-select: none; animation: nodeIntro .62s cubic-bezier(.18,.89,.32,1.28) forwards; animation-delay: var(--delay); transition: transform .22s ease, opacity .22s ease, filter .22s ease; border: none; background: none; padding: 0; contain: layout style; will-change: transform, filter; }
 @keyframes nodeIntro { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-.tech-node:hover, .tech-node.is-highlighted { transform: translate(-50%, -50%) scale(1.16); z-index: 50; filter: saturate(1.35) brightness(1.18); }
-.tech-node.is-dragging { cursor: grabbing; transform: translate(-50%, -50%) scale(1.18); z-index: 70; filter: saturate(1.45) brightness(1.24); }
-.node-shell { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.11), transparent 34%), linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 0 10px var(--color), 0 0 22px var(--color), 0 0 42px var(--color2), inset 0 0 18px rgba(255,255,255,.08); clip-path: polygon(50% 0%, 88% 14%, 100% 50%, 86% 88%, 50% 100%, 13% 87%, 0% 50%, 14% 13%); animation: nodeBreath 3.8s ease-in-out infinite alternate; }
+.tech-galaxy.has-active-group .tech-node:not(.is-highlighted) { opacity: .38; filter: brightness(.62) saturate(.58); }
+.tech-node:hover, .tech-node.is-highlighted { transform: translate(-50%, -50%) scale(1.1); z-index: 80; filter: brightness(1.1) saturate(1.06) drop-shadow(0 0 10px var(--color)) drop-shadow(0 0 22px color-mix(in srgb, var(--color) 58%, transparent)); }
+.tech-node.is-dragging { cursor: grabbing; transform: translate(-50%, -50%) scale(1.14); z-index: 70; }
+.node-shell { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.11), transparent 34%), linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 0 8px var(--color), 0 0 18px color-mix(in srgb, var(--color) 70%, transparent), inset 0 0 16px rgba(255,255,255,.08); clip-path: polygon(50% 0%, 88% 14%, 100% 50%, 86% 88%, 50% 100%, 13% 87%, 0% 50%, 14% 13%); }
 @keyframes nodeBreath { from { filter: brightness(.94); } to { filter: brightness(1.18); } }
 .node-shell::before, .node-shell::after { content: ""; position: absolute; inset: 6px; border-radius: inherit; clip-path: inherit; pointer-events: none; }
-.node-shell::before { border: 1px dashed rgba(255,255,255,.32); opacity:.82; animation: rotateRing 14s linear infinite; }
-.node-shell::after { inset: -8px; background: conic-gradient(from 0deg, transparent 0 18%, var(--color) 22%, transparent 28% 56%, var(--color2) 62%, transparent 70% 100%); opacity:.26; filter: blur(8px); animation: rotateRing 8s linear infinite reverse; }
+.node-shell::before { border: 1px dashed rgba(255,255,255,.28); opacity:.72; }
+.node-shell::after { inset: -6px; background: conic-gradient(from 0deg, transparent 0 18%, var(--color) 22%, transparent 28% 56%, var(--color2) 62%, transparent 70% 100%); opacity:.18; filter: blur(5px); }
+.tech-node.is-highlighted .node-shell { background: radial-gradient(circle at 50% 42%, rgba(255,255,255,.22), rgba(255,255,255,.08) 32%, transparent 58%), linear-gradient(135deg, color-mix(in srgb, var(--color) 22%, rgba(255,255,255,.12)), rgba(255,255,255,.04)); border-color: color-mix(in srgb, var(--color) 58%, white); box-shadow: 0 0 12px var(--color), 0 0 28px color-mix(in srgb, var(--color) 62%, transparent), 0 0 42px color-mix(in srgb, var(--color2) 44%, transparent), inset 0 0 18px rgba(255,255,255,.14); animation: selectedNodePulse 1.7s ease-in-out infinite alternate; }
+.tech-node.is-highlighted .node-shell::before { border-color: rgba(255,255,255,.46); opacity: .88; }
+.tech-node.is-highlighted .node-shell::after { inset: -9px; opacity: .34; filter: blur(7px); animation: rotateRing 4s linear infinite; }
+@keyframes selectedNodePulse { from { filter: brightness(1.02); } to { filter: brightness(1.12); } }
 @keyframes rotateRing { to { transform: rotate(360deg); } }
-.node-icon { position: relative; width: 44%; height: 44%; display: grid; place-items: center; color: var(--color); text-shadow: 0 0 10px var(--color), 0 0 18px var(--color); filter: drop-shadow(0 0 9px var(--color)); z-index: 2; }
+.node-icon { position: relative; width: 44%; height: 44%; display: grid; place-items: center; color: var(--color); filter: drop-shadow(0 0 6px var(--color)); z-index: 2; }
 .node-icon svg { width: 100%; height: 100%; }
 .node-icon img { width: 100%; height: 100%; object-fit: contain; }
 .node-letter { font-weight: 850; font-size: clamp(17px, 1.5vw, 26px); line-height: 1; letter-spacing: 0; }
 .node-letter-small { font-size: clamp(12px, 1vw, 17px); letter-spacing: 0; line-height: .95; }
 .node-name { position: absolute; left: 50%; top: calc(100% + 7px); transform: translateX(-50%); min-width: 92px; text-align: center; font-size: clamp(9px, .66vw, 12px); font-weight: 700; color: rgba(241,251,255,.88); text-shadow: 0 0 8px rgba(255,255,255,.35), 0 0 14px var(--color); pointer-events: none; }
-.tech-node:hover .node-name, .tech-node.is-highlighted .node-name { color: white; text-shadow: 0 0 8px white, 0 0 18px var(--color), 0 0 30px var(--color2); }
+.tech-node.is-highlighted .node-icon { transform: scale(1.04); filter: drop-shadow(0 0 7px currentColor) drop-shadow(0 0 16px var(--color)); }
+.tech-node:hover .node-name, .tech-node.is-highlighted .node-name { color: white; text-shadow: 0 0 6px rgba(255,255,255,.85), 0 0 14px var(--color), 0 0 24px var(--color2); }
 .group-label { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 10px; min-height: 34px; padding: 5px 14px 5px 6px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: linear-gradient(180deg, rgba(15,18,48,.75), rgba(5,8,24,.48)); box-shadow: 0 0 14px var(--color), inset 0 0 14px rgba(255,255,255,.035); backdrop-filter: blur(10px); pointer-events: auto; cursor: pointer; user-select: none; transition: transform .24s ease, box-shadow .24s ease; }
 .group-label .number { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: var(--color); border: 1px solid rgba(255,255,255,.24); font-size: 12px; font-weight: 900; text-shadow: 0 0 12px var(--color); background: rgba(255,255,255,.04); }
 .group-label .label-text { color: #eef7ff; font-size: clamp(10px, .72vw, 13px); font-weight: 850; letter-spacing: .08em; text-shadow: 0 0 10px var(--color); white-space: nowrap; }
 .group-label:hover, .group-label.active { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 0 16px var(--color), 0 0 38px var(--color); }
 .core { position: absolute; left: 50%; top: 50%; width: 166px; transform: translate(-50%, -48%); display: grid; justify-items: center; text-align: center; }
-.avatar-wrap { position: relative; width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(26,240,255,.22), transparent 68%); filter: drop-shadow(0 0 20px rgba(46,221,255,.72)); animation: corePulse 2.7s ease-in-out infinite alternate; }
+.avatar-wrap { position: relative; width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(26,240,255,.22), transparent 68%); filter: drop-shadow(0 0 16px rgba(46,221,255,.58)); }
 @keyframes corePulse { from { filter: drop-shadow(0 0 15px rgba(46,221,255,.55)); } to { filter: drop-shadow(0 0 23px rgba(255,60,214,.8)); } }
-.avatar-wrap::before { content:""; position:absolute; inset:-9px; border-radius:50%; background: conic-gradient(from 210deg, #35eaff, #3688ff, #9b4dff, #ff4ecd, #35eaff); box-shadow: 0 0 24px rgba(56,232,255,.72), 0 0 38px rgba(255,70,214,.55); animation: rotateRing 6s linear infinite; }
-.avatar-wrap::after { content:""; position:absolute; inset:-21px; border-radius:50%; border:1px dashed rgba(103,222,255,.42); box-shadow: 0 0 28px rgba(123,77,255,.34); animation: rotateRing 18s linear infinite reverse; }
+.avatar-wrap::before { content:""; position:absolute; inset:-9px; border-radius:50%; background: conic-gradient(from 210deg, #35eaff, #3688ff, #9b4dff, #ff4ecd, #35eaff); box-shadow: 0 0 20px rgba(56,232,255,.52), 0 0 30px rgba(255,70,214,.35); }
+.avatar-wrap::after { content:""; position:absolute; inset:-21px; border-radius:50%; border:1px dashed rgba(103,222,255,.34); box-shadow: 0 0 20px rgba(123,77,255,.22); }
 .avatar { position: relative; z-index: 2; width: 118px; height: 118px; border-radius: 50%; object-fit: cover; object-position: center; border: 2px solid rgba(255,255,255,.22); background: linear-gradient(145deg, #122659, #0a0d19 58%, #351044); }
 .core h2 { margin: 16px 0 0; font-size: 19px; line-height: 1.1; font-weight: 850; letter-spacing: 0; color: #f5fbff; text-shadow: 0 0 10px rgba(255,255,255,.3), 0 0 20px rgba(65,230,255,.42); }
 .core p { margin: 5px 0 0; font-size: 11px; color: rgba(232,246,255,.72); font-weight: 600; }
@@ -321,7 +327,19 @@ const galaxyStyles = `
 `;
 
 export default function SkillsSection() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window === "undefined" ? false : window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  const [lowPowerDevice] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      (((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4) ||
+      (navigator.hardwareConcurrency ?? 8) <= 4
+    );
+  });
+  const [isSectionVisible, setIsSectionVisible] = useState(true);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [draggingNodeKey, setDraggingNodeKey] = useState<string | null>(null);
   const [draggingGroupId, setDraggingGroupId] = useState<string | null>(null);
   const [nodePositions, setNodePositions] = useState<NodePositionMap>(() => getInitialNodePositions());
@@ -329,10 +347,35 @@ export default function SkillsSection() {
     () => getInitialGroupLabelPositions(),
   );
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const draggingRef = useRef<DragState | null>(null);
+  const dragFrameRef = useRef(0);
+  const pendingDragPointRef = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      setPrefersReducedMotion(motionQuery.matches);
+    };
+    motionQuery.addEventListener("change", apply);
+    return () => motionQuery.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSectionVisible(entry.isIntersecting),
+      { rootMargin: "160px 0px", threshold: 0.01 },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   const stars = useMemo(
     () =>
-      Array.from({ length: 85 }, (_, i) => ({
+      Array.from({ length: prefersReducedMotion ? 8 : lowPowerDevice ? 14 : 22 }, (_, i) => ({
         id: i,
         left: (i * 37.7) % 100,
         top: (i * 61.3) % 100,
@@ -341,16 +384,21 @@ export default function SkillsSection() {
         delay: `${(i * 0.13) % 4}s`,
         duration: `${3 + ((i * 0.19) % 4)}s`,
       })),
-    [],
+    [lowPowerDevice, prefersReducedMotion],
   );
 
-  const movingDots = [
-    { id: "p1", rx: 760, ry: 342, color: "#ff4ecd", dur: "29s", begin: "-8s" },
-    { id: "p2", rx: 690, ry: 305, color: "#22ffd1", dur: "24s", begin: "-5s" },
-    { id: "p3", rx: 620, ry: 260, color: "#35eaff", dur: "19s", begin: "0s" },
-    { id: "p4", rx: 545, ry: 215, color: "#ffd35c", dur: "21s", begin: "-3s" },
-    { id: "p5", rx: 455, ry: 178, color: "#3aa2ff", dur: "17s", begin: "-7s" },
-  ];
+  const movingDots = useMemo(
+    () =>
+      prefersReducedMotion
+        ? []
+        : lowPowerDevice
+          ? []
+          : [
+              { id: "p2", rx: 690, ry: 305, color: "#22ffd1", dur: "24s", begin: "-5s" },
+              { id: "p4", rx: 545, ry: 215, color: "#ffd35c", dur: "21s", begin: "-3s" },
+            ],
+    [lowPowerDevice, prefersReducedMotion],
+  );
 
   const editableGroups = useMemo(
     () =>
@@ -364,23 +412,7 @@ export default function SkillsSection() {
       })),
     [nodePositions, groupLabelPositions],
   );
-
-  const coordinateOutput = useMemo(
-    () =>
-      editableGroups
-        .map((group) => {
-          const nodes = group.nodes
-            .map(
-              (node) =>
-                `  { name: "${node.name}", icon: "${node.icon}", x: ${node.x.toFixed(1)}, y: ${node.y.toFixed(1)}, size: ${node.size}, orbit: "${node.orbit}" },`,
-            )
-            .join("\n");
-
-          return `${group.label}\nlabelPos: { x: ${group.labelPos.x.toFixed(1)}, y: ${group.labelPos.y.toFixed(1)} }\nnodes: [\n${nodes}\n]`;
-        })
-        .join("\n\n"),
-    [editableGroups],
-  );
+  const highlightedGroup = activeGroup ?? selectedGroup;
 
   const getPointerPercent = (clientX: number, clientY: number) => {
     const frame = frameRef.current;
@@ -510,31 +542,49 @@ export default function SkillsSection() {
   };
 
   useEffect(() => {
-    const handleMove = (clientX: number, clientY: number) => {
+    const flushDragMove = () => {
+      dragFrameRef.current = 0;
       const dragging = draggingRef.current;
-      if (!dragging) return;
-      setActiveGroup(dragging.groupId);
+      const point = pendingDragPointRef.current;
+      pendingDragPointRef.current = null;
+      if (!dragging || !point) return;
+
       if (dragging.kind === "node") {
         updateNodePosition(
           dragging.key,
-          clientX,
-          clientY,
+          point.x,
+          point.y,
           dragging.offsetX,
           dragging.offsetY,
         );
       } else {
         updateGroupLabelPosition(
           dragging.key,
-          clientX,
-          clientY,
+          point.x,
+          point.y,
           dragging.offsetX,
           dragging.offsetY,
         );
       }
     };
 
+    const handleMove = (clientX: number, clientY: number) => {
+      const dragging = draggingRef.current;
+      if (!dragging) return;
+      pendingDragPointRef.current = { x: clientX, y: clientY };
+      if (!dragFrameRef.current) {
+        dragFrameRef.current = window.requestAnimationFrame(flushDragMove);
+      }
+    };
+
     const stopDrag = () => {
+      if (dragFrameRef.current) {
+        window.cancelAnimationFrame(dragFrameRef.current);
+        dragFrameRef.current = 0;
+      }
+      flushDragMove();
       draggingRef.current = null;
+      pendingDragPointRef.current = null;
       setDraggingNodeKey(null);
       setDraggingGroupId(null);
       document.body.style.cursor = "";
@@ -573,7 +623,14 @@ export default function SkillsSection() {
   return (
     <>
       <style>{galaxyStyles}</style>
-      <section id="skills" className="tech-galaxy" aria-label="Tech Galaxy My Skills Section">
+      <section
+        ref={sectionRef}
+        id="skills"
+        className={`tech-galaxy ${isSectionVisible ? "" : "is-paused"} ${
+          prefersReducedMotion || lowPowerDevice ? "is-reduced" : ""
+        } ${highlightedGroup ? "has-active-group" : ""}`}
+        aria-label="Tech Galaxy My Skills Section"
+      >
         <div className="corner-scan" />
         <div className="skills-heading">
           <h2>Don’t Just List Skills — I Connect Systems.</h2>
@@ -677,7 +734,7 @@ export default function SkillsSection() {
                     key={key}
                     type="button"
                     aria-label={node.name}
-                    className={`tech-node ${activeGroup === group.id ? "is-highlighted" : ""} ${
+                    className={`tech-node ${highlightedGroup === group.id ? "is-highlighted" : ""} ${
                       draggingNodeKey === key ? "is-dragging" : ""
                     }`}
                     onMouseDown={(event) => handleNodeMouseDown(key, group.id, event)}
@@ -712,7 +769,7 @@ export default function SkillsSection() {
               <button
                 key={group.id}
                 type="button"
-                className={`group-label ${activeGroup === group.id ? "active" : ""} ${
+                className={`group-label ${highlightedGroup === group.id ? "active" : ""} ${
                   draggingGroupId === group.id ? "is-dragging" : ""
                 }`}
                 style={
@@ -724,6 +781,7 @@ export default function SkillsSection() {
                 }
                 onMouseDown={(event) => handleGroupLabelMouseDown(group.id, event)}
                 onTouchStart={(event) => handleGroupLabelTouchStart(group.id, event)}
+                onClick={() => setSelectedGroup((current) => (current === group.id ? null : group.id))}
                 onMouseEnter={() => setActiveGroup(group.id)}
                 onMouseLeave={() => setActiveGroup(null)}
                 onFocus={() => setActiveGroup(group.id)}
@@ -756,7 +814,7 @@ export default function SkillsSection() {
         </div>
         <div className="mobile-hint">Tech Galaxy - drag horizontally on small screens</div>
       </section>
-      {/* Coordinate recorder panel intentionally hidden after position lock-in */}
+      {/* Coordinate panel hidden after position lock-in */}
     </>
   );
 }

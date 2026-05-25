@@ -3,7 +3,6 @@
 Tài liệu này hướng dẫn cách tích hợp chức năng chuyển đổi ngôn ngữ tự động cho landing page bằng **Google Translate Website Widget**.
 
 Mục tiêu:
-
 - Người dùng vào website có thể chọn ngôn ngữ.
 - Toàn bộ nội dung text trên landing page được dịch tự động.
 - Không cần định nghĩa cứng từng câu trong code.

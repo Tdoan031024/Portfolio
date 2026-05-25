@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import { useLanguage } from "@/components/LanguageProvider";
+import GuideCallout from "@/components/GuideCallout";
 
 const quickLinks = [
   { label: "About", href: "#hero", icon: "user" },
@@ -12,6 +13,11 @@ const quickLinks = [
   { label: "Works", href: "#experience", icon: "briefcase" },
   { label: "Contact", href: "#contact", icon: "send" },
 ] as const;
+
+const guideVersion = "portfolio-guides-2026-05-22-6";
+const guideAnimationDuration = 6800;
+const guideFadeDuration = 700;
+const guideEditMode = false;
 
 function SidebarIcon({ type }: { type: (typeof quickLinks)[number]["icon"] }) {
   if (type === "user") {
@@ -53,6 +59,9 @@ export default function SiteHeader() {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [sidebarGuideMounted, setSidebarGuideMounted] = useState(false);
+  const [sidebarGuideVisible, setSidebarGuideVisible] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -71,6 +80,55 @@ export default function SiteHeader() {
     const raf = window.requestAnimationFrame(() => setEntered(true));
     return () => window.cancelAnimationFrame(raf);
   }, [visible]);
+
+  useEffect(() => {
+    const updateScrollState = () => {
+      setHasScrolled(window.scrollY > 120);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !visible) return;
+    if (guideEditMode) {
+      setSidebarGuideMounted(true);
+      setSidebarGuideVisible(true);
+      return;
+    }
+
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+
+    let hasShown = false;
+    const timers: number[] = [];
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || hasShown) return;
+        hasShown = true;
+        setSidebarGuideMounted(true);
+        window.requestAnimationFrame(() => setSidebarGuideVisible(true));
+        timers.push(
+          window.setTimeout(() => {
+            setSidebarGuideVisible(false);
+          }, guideAnimationDuration),
+          window.setTimeout(() => {
+            setSidebarGuideMounted(false);
+          }, guideAnimationDuration + guideFadeDuration),
+        );
+        observer.disconnect();
+      },
+      { threshold: 0.22 },
+    );
+
+    observer.observe(hero);
+    return () => {
+      observer.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [mounted, visible]);
 
   if (!mounted || !visible) {
     return null;
@@ -95,7 +153,13 @@ export default function SiteHeader() {
         </div>
       </header>
 
-      <nav className="fixed right-4 top-1/2 !z-[220] hidden -translate-y-1/2 flex-col gap-2 md:flex">
+      <nav
+        className={`fixed right-4 top-1/2 !z-[220] hidden -translate-y-1/2 flex-col gap-2 transition-all duration-500 ease-out md:flex ${
+          hasScrolled
+            ? "pointer-events-auto translate-x-0 opacity-100"
+            : "pointer-events-none translate-x-4 opacity-0"
+        }`}
+      >
         {quickLinks.map((item) => (
           <a
             key={item.label}
@@ -111,8 +175,25 @@ export default function SiteHeader() {
           </a>
         ))}
       </nav>
+
+      {sidebarGuideMounted && (
+        <GuideCallout
+          label="Use sidebar icons for quick jump"
+          className={`fixed right-[72px] top-1/2 !z-[260] hidden h-[260px] w-[430px] -translate-y-1/2 transition-opacity duration-700 md:block ${
+            sidebarGuideVisible ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+          viewBox="0 0 430 260"
+          initialOffset={{ x: 22, y: -84 }}
+          start={{ x: 234, y: 111 }}
+          end={{ x: 398, y: 208 }}
+          labelBox={{ x: 107, y: 45, width: 285, height: 56 }}
+          storageKey="guide-sidebar"
+          storageVersion={guideVersion}
+        />
+      )}
     </>
     ,
     document.body,
   );
 }
+
