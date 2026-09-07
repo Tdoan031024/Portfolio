@@ -183,4 +183,4 @@ Trước khi bắt đầu, hãy đảm bảo máy tính đã cài đặt:
 ## 👤 Tác Giả
 - **Developer:** Doan
 - **GitHub:** [@Tdoan031024](https://github.com/Tdoan031024)
-- **Dự án:** [myportfolio](https://github.com/Tdoan031024/myportfolio.git)
+- **Dự án:** [Portfolio](https://github.com/Tdoan031024/Portfolio.git)
